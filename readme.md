@@ -27,7 +27,8 @@ The pipeline follows a standard **ELT (Extract, Load, Transform)** pattern:
 
 4.  **Warehouse:** BigQuery (Dataset: `recipe_analytics`) - *Analytics*
 
-![alt text](<etl flow (2)-1.png>)
+__ETL Flow:__
+![alt text](pictures/etl-flow-1.png)
 
 ---
 2\. Data Model & Schema
@@ -59,7 +60,8 @@ To facilitate SQL analysis, the data is normalized into 5 tables (Star Schema ap
 
 5.  **`interactions`**: Fact table for user events (`view`, `like`, `timestamp`).
 
-![alt text](image-2.png)
+ER Diagram:
+![alt text](pictures/image-2.png)
 ---
 3\. Setup & Prerequisites
 -------------------------
@@ -89,7 +91,7 @@ pip install firebase-admin faker google-cloud-bigquery google-cloud-storage pand
 Populates Firestore with the primary "Chicken Gravy" recipe (sourced from candidate input) and 19 synthetic recipes to simulate a live application.
 
 ```
-python seed_firestore.py
+python insert_recipe.py
 
 ```
 
@@ -132,7 +134,7 @@ python data_validation.py
 Loads the CSV files from the Cloud Storage Bucket into BigQuery tables.
 
 ```
-python complete_bq_setup.py
+python recipe_analytics.py
 
 ```
 
@@ -164,6 +166,7 @@ FROM `recipe_analytics.ingredients`
 GROUP BY 1 ORDER BY 2 DESC LIMIT 5;
 
 ```
+Output
 | Ingredient            | Frequency |
 |-----------------------|-----------|
 | Rice                  | 14        |
@@ -173,7 +176,7 @@ GROUP BY 1 ORDER BY 2 DESC LIMIT 5;
 | Salt                  | 12        |
 | Chicken               | 11        |
 
-![alt text](image-3.png)
+![alt text](pictures/image-3.png)
 
 ### 2\. Average Preparation Time
 
@@ -185,6 +188,7 @@ FROM `recipe_analytics.recipes`
 WHERE prep_time_minutes > 0;
 
 ```
+Output
 | Metric            | Value |
 |-------------------|-------|
 | Average Time (min) | 65.3  |
@@ -199,13 +203,14 @@ SELECT difficulty, COUNT(*) as count
 FROM `recipe_analytics.recipes`
 GROUP BY 1;
 ```
+Output
 | Difficulty | Count |
 |-----------|--------|
 | Easy      | 7      |
 | Hard      | 5      |
 | Medium    | 8      |
 
-![alt text](image-8.png)
+![alt text](pictures/image-8.png)
 ### 4\. Correlation: Prep Time vs. Likes
 
 *Comparing the prep time of "Liked" recipes vs the global average.*
@@ -219,6 +224,7 @@ SELECT
      WHERE i.type = 'like') as liked_avg;
 
 ```
+Output
 | global_avg      | liked_avg |
 |---------------|--------|
 | 65.3  | 69.2    |
@@ -234,6 +240,7 @@ WHERE i.type = 'view'
 GROUP BY 1 ORDER BY 2 DESC LIMIT 1;
 
 ```
+Output
 | Row | Title        | Views |
 |-----|--------------|-------|
 | 1   | Cheesy Cake  | 6     |
@@ -250,6 +257,7 @@ WHERE i.type = 'like'
 GROUP BY 1 ORDER BY 2 DESC LIMIT 5;
 
 ```
+Output
 | Row | Name     | Likes |
 |-----|----------|-------|
 | 1   | Basil    | 13    |
@@ -258,7 +266,7 @@ GROUP BY 1 ORDER BY 2 DESC LIMIT 5;
 | 4   | Pepper   | 11    |
 | 5   | Chicken  | 10    |
 
-![alt text](image-7.png)
+![alt text](pictures/image-7.png)
 ### 7\. Most Active Users
 
 *Users with the highest number of interactions.*
@@ -270,6 +278,7 @@ JOIN `recipe_analytics.users` u ON i.user_id = u.user_id
 GROUP BY 1 ORDER BY 2 DESC LIMIT 3;
 
 ```
+Output
 | Username          | Actions |
 |-------------------|---------|
 | Carl Lee          | 7       |
@@ -284,7 +293,7 @@ GROUP BY 1 ORDER BY 2 DESC LIMIT 3;
 | Erin Hopkins      | 3       |
 | Brenda Wall       | 2       |
 
-![alt text](image-6.png)
+![alt text](pictures/image-6.png)
 ### 8\. Most Complex Recipes
 
 *Recipes with the highest number of cooking steps.*
@@ -296,6 +305,7 @@ JOIN `recipe_analytics.steps` s ON r.recipe_id = s.recipe_id
 GROUP BY 1 ORDER BY 2 DESC LIMIT 1;
 
 ```
+Output
 | Row | Title                           | Steps |
 |-----|----------------------------------|-------|
 | 1   | Chicken Gravy for 2 People       | 8     |
@@ -307,6 +317,7 @@ SELECT ROUND(AVG(cnt),1) as avg_ingredients
 FROM (SELECT recipe_id, COUNT(*) as cnt FROM `recipe_analytics.ingredients` GROUP BY recipe_id);
 
 ```
+Output
 | Row | Avg Ingredients |
 |-----|-----------------|
 | 1   | 6.0             |
@@ -323,13 +334,15 @@ WHERE i.type = 'view'
 GROUP BY 1 ORDER BY 2 DESC;
 
 ```
+Output
 | Row | Difficulty | Views |
 |-----|------------|-------|
 | 1   | Medium     | 9     |
 | 2   | Easy       | 9     |
 | 3   | Hard       | 8     |
 
-![alt text](image-9.png)
+![alt text](pictures/image-7.png)
+
 7\. Known Constraints & Limitations
 -----------------------------------
 
