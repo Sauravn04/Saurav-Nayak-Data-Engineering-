@@ -30,6 +30,37 @@ The pipeline follows a standard **ELT (Extract, Load, Transform)** pattern:
 __ETL Flow:__
 ![alt text](pictures/etl-flow-1.png)
 
+__Project File Structure:__
+```text
+SAURAV-NAYAK-DATA-ENGINEER-ASSESSMENT/
+│
+│
+├── Normalized_CSV_output/             # Output folder for ETL pipeline
+│   ├── ingredients.csv
+│   ├── interactions.csv
+│   ├── recipe.csv
+│   ├── steps.csv
+│   └── users.csv
+│
+├── pictures/                          # Screenshots and diagrams for README
+│
+├── schema/                            # JSON schema definitions 
+│   ├── recipe.json
+│   ├── user_interaction.json
+│   └── user.json
+│
+├── src/                               # Source code folder
+│   ├── data_validation.py             # Script for Data Quality Validation 
+│   ├── etl_pipeline.py                # Script for ETL Process 
+│   ├── insert_recipe.py               # Script for Seeding Database 
+│   └── recipe_analytics.py            # Script for BigQuery Analytics 
+│
+├── .gitignore                         # Git configuration to ignore keys/temp files
+├── Analytics Summary Report copy.pdf  # Final PDF report for stakeholders
+├── readme.md                          # Main Project Documentation
+├── requirements.txt                   # List of Python dependencies
+└── validation_report.csv              # Output report from data_validation.py
+```
 ---
 2\. Data Model & Schema
 -----------------------
