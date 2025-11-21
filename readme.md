@@ -1,16 +1,14 @@
 
 Recipe Analytics Data Pipeline
 ==============================
-
 **Author:** Saurav Nayak <br>
 **Role:** Data Engineer <br>
 **E-mail:** nayaksaurav99@gmail.com <br>
 **Project:** Firebase-Based Recipe Analytics Pipeline
 ---
---------------------
+
 1\. Project Overview
 --------------------
-
 This project implements an end-to-end Data Engineering pipeline designed to ingest, transform, and analyze recipe data. The system uses **Firebase Firestore** as a transactional NoSQL source and **Google BigQuery** as the analytical data warehouse.
 
 The goal is to analyze user engagement (views, likes) and recipe complexity (ingredients, steps) to derive business insights.
