@@ -101,7 +101,7 @@ ER Diagram:
 
 -   **Python:** 3.8+
 
--   **Google Cloud Platform:** Project `fir-f8d56` with BigQuery & Storage enabled.
+-   **Google Cloud Platform:** Project ID with BigQuery & Storage enabled.
 
 -   **Firebase:** Admin SDK Credentials (`serviceaccount.json`).
 
@@ -119,7 +119,7 @@ pip install firebase-admin faker google-cloud-bigquery google-cloud-storage pand
 
 ### Step 1: Seed the Database
 
-Populates Firestore with the primary "Chicken Gravy" recipe (sourced from candidate input) and 19 synthetic recipes to simulate a live application.
+Populates Firestore with the primary "Chicken Gravy" recipe and 19 synthetic recipes to simulate a live application.
 
 ```
 python insert_recipe.py
@@ -178,7 +178,7 @@ The ETL (Extract, Transform, Load) pipeline is implemented in Python (`etl_pipel
 
 ### 1\. Extraction (Extract)
 
--   **Source:** Firebase Firestore (Default Database).
+-   **Source:** Firebase Firestore.
 
 -   **Method:** Uses the `firebase-admin` SDK to stream documents from three primary collections: `users`, `recipes`, and `interactions`.
 
