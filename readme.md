@@ -143,13 +143,55 @@ python recipe_analytics.py
 5\. ETL Process Overview
 ------------------------
 
-The ETL process is handled by `etl_pipeline.py`. It performs the following transformations:
+The ETL (Extract, Transform, Load) pipeline is implemented in Python (`etl_pipeline.py`) to bridge the gap between the document-oriented source (Firestore) and the structured analytics destination (BigQuery).
 
-1.  **Flattening:** Converts nested JSON arrays (Ingredients, Steps) into separate rows.
+### 1\. Extraction (Extract)
 
-2.  **Cleaning:** Handles missing ratings (nulls) and ensures timestamp formats are consistent.
+-   **Source:** Firebase Firestore (Default Database).
 
-3.  **Normalization:** Separates User and Recipe metadata from the Interaction log to reduce redundancy.
+-   **Method:** Uses the `firebase-admin` SDK to stream documents from three primary collections: `users`, `recipes`, and `interactions`.
+
+-   **Logic:** Streaming (`.stream()`) is used instead of fetching all data at once to ensure memory efficiency and scalability for large datasets.
+
+### 2\. Transformation (Transform)
+
+The raw JSON data from Firestore is semi-structured (nested arrays). The pipeline normalizes this into a **Relational Star Schema** format suitable for SQL analysis.
+
+-   **Normalization of Recipes:**
+
+    -   The `recipes` document contains nested arrays for `ingredients` and `steps`.
+
+    -   **Explosion:** The pipeline iterates through these arrays to create separate rows for the `ingredients.csv` and `steps.csv` files.
+
+    -   **Indexing:** A `step_number` is generated for each cooking step to preserve the correct order in the relational format.
+
+-   **Data Cleaning:**
+
+    -   Timestamps are preserved in ISO format.
+
+    -   Missing optional fields (like `rating` in interactions) are handled gracefully to prevent schema errors.
+
+-   **Schema Mapping:**
+
+    -   JSON fields are mapped to specific CSV columns (e.g., `prep_time_minutes`, `difficulty`).
+
+### 3\. Loading (Load)
+
+-   **Local Staging:** The transformed data is first written to 5 normalized CSV files locally:
+
+    -   `users.csv`
+
+    -   `recipe.csv`
+
+    -   `ingredients.csv`
+
+    -   `steps.csv`
+
+    -   `interactions.csv`
+
+-   **Data Lake Backup:** These files are programmatically uploaded to a Google Cloud Storage bucket (`gs://saurav_recipe_backup`) to serve as a persistent raw data backup.
+
+-   **Warehouse Loading:** A separate process loads these CSVs from Cloud Storage into **BigQuery** tables, utilizing schema auto-detection.
 
 6\. Analytics & Insights Summary
 --------------------------------
@@ -341,7 +383,7 @@ Output
 | 2   | Easy       | 9     |
 | 3   | Hard       | 8     |
 
-![alt text](pictures/image-7.png)
+![alt text](pictures/image-9.png)
 
 7\. Known Constraints & Limitations
 -----------------------------------
